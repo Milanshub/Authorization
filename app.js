@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
 // connects to local mondoDB database and creates userDB 
-//, {useNewUrlParser: true}
+//, {useNewUrlParser: true} blabla
 mongoose.connect("mongodb://localhost:27017/userDB");
 
 
