@@ -38,9 +38,6 @@ app.use(passport.session());
 mongoose.set("strictQuery", true); 
 mongoose.connect("mongodb://localhost:27017/userDB");
 
-
-
-
 // conifguration to add users with email and password in MongoDB 
 // Also  later added "new mongoose.Schema" to later add encryption package
 const userSchema = new mongoose.Schema ({
