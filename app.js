@@ -4,8 +4,12 @@ import express from "express";
 import bodyParser from "body-parser";
 import ejs from "ejs";
 import mongoose from "mongoose";
-import encrypt from "mongoose-encryption";
-import md5 from "md5";
+// import encrypt from "mongoose-encryption";
+// import md5 from "md5";
+import bcrypt from "bcryptjs";
+
+const saltRounds = 10;
+
 
 
 
@@ -14,7 +18,7 @@ const app = express();
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
 
 // connects to local mondoDB database and creates userDB 
 //, {useNewUrlParser: true} blabla
@@ -58,9 +62,14 @@ app.get("/register", function (reg, res){
 // when the user in '/register' he can do a POST request, that..
 // we can catch, save in the DB and then open the 'secrets render' 
 app.post("/register", function (req, res){
-    const newUser = new User ({
+    
+    // where hash and salt
+    bcrypt.hash(req.body.password, 10, function(err, hash) {
+     
+        const newUser = new User ({
         email: req.body.username, 
-        password: md5(req.body.password)
+        password:hash
+                //md5(req.body.password)
     });
     
     //saves the new user
@@ -71,6 +80,9 @@ app.post("/register", function (req, res){
             res.render("secrets");
         }
     });
+    
+    }); 
+   
 });
 
 // when the user is in '/login' he can do a POST requestr, that..
@@ -85,9 +97,12 @@ app.post("/login", function (req, res){
             console.log(err);
         } else {
            if (foundUser) {
-            if (foundUser.password === password){
-            res.render("secrets");
-            }
+            // unhash the password and render secrets 
+            bcrypt.compare( password, foundUser.password, function(err, result) {
+               if (result == true) {
+                res.render("secrets");
+               }  
+            });
             } 
         }
     });
