@@ -169,6 +169,32 @@ app.get("/submit", function(req, res){
         });
       });
 
+
+app.get("/submit", function (req, res){
+    if (req.isAuthenticated()) {
+        res.render("submit");
+    } else {
+        res.redirect("/login");
+    }
+});
+
+app.post("/submit", function (req, res){
+    const submittedSecret = req.body.secrets;
+
+    User.findById(req.user.id, function (err, foundUser){
+        if (err){
+            console.log(err);
+        } else {
+            if (foundUser){
+                foundUser.secret = submittedSecret;
+                foundUser.save(function(){
+                    res.redirect("/secrets");
+                } )
+            }
+        }
+    });
+});
+
  app.get("/logout", function(req, res){
         req.logout();
         res.redirect("/");
@@ -196,7 +222,8 @@ app.post("/login", function (req, res){
     passowrd: req.body.passoword
    });
 
-   req.login(user, function(err){
+
+req.login(user, function(err){
     if (err){
         console.log(err);
     } else {
